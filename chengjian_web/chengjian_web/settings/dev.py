@@ -15,6 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# 因为项目的子应用都放在了apps目录下。apps目录不在当前项目的搜索包目录中，所以启动项目时，找不到。
+import sys
+
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -35,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # 子应用注册
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -118,7 +126,7 @@ LOGGING = {
             'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
         },
     },
-    'filters':{  # 对日志进行过滤
+    'filters': {  # 对日志进行过滤
         'require_debug_true': {  # django在debug模式下才输出日志
             '()': 'django.utils.log.RequireDebugTrue',
         },
@@ -131,7 +139,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'file': {  # 向文件中输出日志
-            'level':'INFO',
+            'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/chengjian.log'),  # 日志文件的位置
             'maxBytes': 300 * 1024 * 1024,
@@ -139,9 +147,9 @@ LOGGING = {
             'formatter': 'verbose'
         },
     },
-    'loggers':{  # 日志器
-        'django':{  # 定义一个名为django的日志器
-            'handlers': ['console', 'file'], # 可以同时向终端与文件中输出日志
+    'loggers': {  # 日志器
+        'django': {  # 定义一个名为django的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
             'propagate': True,  # 是否继续传递日志信息
             'level': 'INFO',  # 日志器接收的最低日志级别
         }
@@ -183,3 +191,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# 替换auth子应用中内置的User模型类
+# 固定格式：AUTH_USER_MODEL = '子应用名.模型类名'
+AUTH_USER_MODEL = 'users.User'
